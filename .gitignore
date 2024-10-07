@@ -1,2 +1,3 @@
 # Erlaube keine Dateien in Debug-Ordnern
 Debug/
+.vs
