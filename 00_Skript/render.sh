@@ -1,0 +1,1 @@
+latexmk -cd -pdf -shell-escape -pvc skript.tex 

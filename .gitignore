@@ -1,3 +1,12 @@
-# Erlaube keine Dateien in Debug-Ordnern
 Debug/
 .vs/
+00_Skript/_markdown_skript/
+00_Skript/_minted-skript/
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.err
+*.lua
+*.out
+*.toc
