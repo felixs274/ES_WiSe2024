@@ -13,3 +13,11 @@ R = (3,3V - 2V) / 0,02A = 1,3V / 0,02A = 65 Ohm
 ~20mA
 
 Es ist immer nur eine LED an
+
+
+
+
+
+
+-> Atmega Datenblatt S. 313
+-> LED Datenblatt S. 3
