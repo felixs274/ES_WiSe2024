@@ -49,36 +49,32 @@ unsigned short load_dip() {
 }
 
 
-// Check button press 
-unsigned short check_button_press(unsigned short pin, unsigned short reg) {
-	if (!(PIND & (1 << pin)) || !(PINC & (1 << pin))) {
-		write_btn_reg(reg, 1);
-		return(1);
-	}
-	else {
-		write_btn_reg(reg, 0);
-		return(0);
-	}
+// Check button press
+unsigned short check_button_press(unsigned short pin) {
+	return(!(PIND & (1 << pin)) || !(PINC & (1 << pin)));
 }
 
 
 // Start Button A3 Press
 ISR(INT0_vect) {
-	if (check_button_press(PIND2, btn_reg_reset)) { 
+	//cli();
+	if (check_button_press(PIND2)) {
 		write_btn_reg(btn_reg_active, 1);
-	} else {
+		} else {
 		write_btn_reg(btn_reg_active, 0);
 	}
+	//sei();
 }
 
 // Reset Button A4 Press
 ISR(PCINT1_vect) {
-	if (check_button_press(PINC0, btn_reg_reset)) {  // Check if button is low
-			counter = load_dip(); // Set counter to DIP switch value
-			write_btn_reg(btn_reg_active, 0); // Deactivate counter
-			PORTB = (PORTB & ~(0b00000111)) | counter;
+	if (check_button_press(PINC0)) {  // Check if button is low
+		counter = load_dip(); // Set counter to DIP switch value
+		write_btn_reg(btn_reg_active, 0); // Deactivate counter
+		PORTB = (PORTB & ~(0b00000111)) | counter;
 	}
 }
+
 
 // Counter reset if software Interrupt
 ISR(PCINT0_vect) {
