@@ -1,3 +1,10 @@
+/*
+ * Aufgabe_03.c
+ *
+ * Created: 28.10.2024 16:22:55
+ * Author : Felix
+ */ 
+
 #define F_CPU 16000000UL
 
 #include <avr/io.h>
@@ -6,7 +13,7 @@
 
 // Counter Max
 #define c_max 7
-
+	
 // 8 Bit Register for Button States
 volatile unsigned short btn_reg = 0;
 
@@ -42,7 +49,7 @@ unsigned short load_dip() {
 }
 
 
-// Check button press
+// Check button press 
 unsigned short check_button_press(unsigned short pin, unsigned short reg) {
 	if (!(PIND & (1 << pin)) || !(PINC & (1 << pin))) {
 		write_btn_reg(reg, 1);
@@ -57,9 +64,9 @@ unsigned short check_button_press(unsigned short pin, unsigned short reg) {
 
 // Start Button A3 Press
 ISR(INT0_vect) {
-	if (check_button_press(PIND2, btn_reg_reset)) {
+	if (check_button_press(PIND2, btn_reg_reset)) { 
 		write_btn_reg(btn_reg_active, 1);
-		} else {
+	} else {
 		write_btn_reg(btn_reg_active, 0);
 	}
 }
@@ -67,10 +74,16 @@ ISR(INT0_vect) {
 // Reset Button A4 Press
 ISR(PCINT1_vect) {
 	if (check_button_press(PINC0, btn_reg_reset)) {  // Check if button is low
-		counter = load_dip(); // Set counter to DIP switch value
-		write_btn_reg(btn_reg_active, 0); // Deactivate counter
-		PORTB = (PORTB & ~(0b00000111)) | counter;
+			counter = load_dip(); // Set counter to DIP switch value
+			write_btn_reg(btn_reg_active, 0); // Deactivate counter
+			PORTB = (PORTB & ~(0b00000111)) | counter;
 	}
+}
+
+// Counter reset if software Interrupt
+ISR(PCINT0_vect) {
+	counter = 0;
+	PORTB = (PORTB & ~(0b00000111)) | counter;
 }
 
 
@@ -85,38 +98,44 @@ int main(void) {
 	// Set Buttons A4 & A3 to Input = 0
 	DDRD &= ~(1 << DDD2); // A3 (INT0)
 	DDRC &= ~(1 << DDC0); // A4 (PCINT8 on PCINT1)
+	
+	// Set DB3 as Input for SW Interrupt
+	DDRB |= (1 << DDB3);
 
 	// Enable Pull-Ups for DIP and Buttons
 	PORTD |= (1 << DDD7) | (1 << DDD6) | (1 << DDD5) | (1 << DDD2);
 	PORTC |= (1 << DDC0);
 
 
-	// PD2 (INT0) on Falling Edge
-	EICRA |= (1 << ISC01);
-	EIMSK |= (1 << INT0);
+    // PD2 (INT0) on Falling Edge
+    EICRA |= (1 << ISC01);
+    EIMSK |= (1 << INT0);
 	
 	// Pin-Change-Interrupt for PC0 (PCINT8)
 	PCICR |= (1 << PCIE1);
-	PCMSK1 |= (1 << PCINT8);
+	PCMSK1 |= (1 << PCINT8); 
 
-	sei();
+	// Pin-Change-Interrupt Software Interrupt on PB3
+	PCICR |= (1 << PCIE0);
+	PCMSK0 |= (1 << PCINT3);
+
+	sei(); 
 	
 
 	while (1) {
-
 		// Update counter and display on LEDs every second if active
 		if (read_btn_reg(btn_reg_active)) {
 			if (timer_ms >= 1000) {
 				timer_ms = 0; // Reset timer
 				if (counter == c_max) {
-					counter = 0; // Reset to 0 on overflow
+					PORTB ^= (1 << DDB3); // Flip PB3 and trigger SW Interrupt
 				} else {
-					counter += 1; // counter incr
+					counter += 1; // Increment counter
 				}
 				PORTB = (PORTB & ~(0b00000111)) | counter; // Output counter to LEDs
 			}
 		}
-		
+
 		_delay_ms(100);
 		timer_ms += 100;
 	}
