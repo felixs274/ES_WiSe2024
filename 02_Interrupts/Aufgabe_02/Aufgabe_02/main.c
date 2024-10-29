@@ -57,29 +57,33 @@ unsigned short check_button_press(unsigned short pin) {
 
 // Start Button A3 Press
 ISR(INT0_vect) {
-	//cli();
+	cli();
 	if (check_button_press(PIND2)) {
 		write_btn_reg(btn_reg_active, 1);
 		} else {
 		write_btn_reg(btn_reg_active, 0);
 	}
-	//sei();
+	sei();
 }
 
 // Reset Button A4 Press
 ISR(PCINT1_vect) {
+	cli();
 	if (check_button_press(PINC0)) {  // Check if button is low
 		counter = load_dip(); // Set counter to DIP switch value
 		write_btn_reg(btn_reg_active, 0); // Deactivate counter
 		PORTB = (PORTB & ~(0b00000111)) | counter;
 	}
+	sei();
 }
 
 
 // Counter reset if software Interrupt
 ISR(PCINT0_vect) {
+	cli();
 	counter = 0;
 	PORTB = (PORTB & ~(0b00000111)) | counter;
+	sei();
 }
 
 
