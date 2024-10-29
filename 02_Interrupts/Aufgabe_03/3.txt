@@ -1,3 +1,3 @@
 Stack wächst immer weiter -> Stack Overflow, Verzögerungen
 
-Aktueller Interrupt könnte von anderem Interrupt unterbrochen werden -> Loops
+Aktueller Interrupt könnte von anderem Interrupt unterbrochen werden
