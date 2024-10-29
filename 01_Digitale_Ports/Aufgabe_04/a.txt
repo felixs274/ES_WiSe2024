@@ -1,11 +1,15 @@
 a)
 
-16MHz bei tpd,min von 1.5
-(16MHz / 1.5 *2) ^ -1
-= 187.5 * 10^-9 s
-= 187.5ns
+ 1 / 16 MHz  =  62,5 ns
+
+tpd,max (maximale Verzögerung) = 1,5 Takte
+1,5 × 62,5 ns = 93,75 ns
+
+tpd,min (minimale Verzögerung) = 0,5 Takte
+0,5 × 62,5 ns = 31,25 ns
 
 
+Spannungsänderungen > 93,75 ns werden sicher erkannt
 
 
 -> Datenblatt S. 77, 78
