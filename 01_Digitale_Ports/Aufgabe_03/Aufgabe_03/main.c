@@ -72,14 +72,16 @@ int main(void) {
 	// Enable Pull-Ups for DDRD7-3
 	PORTD |= (1 << DDD7) | (1 << DDD6) | (1 << DDD5) | (1 << DDD4) | (1 << DDD3);
 
-	// Main Loop
+
+
 	while (1) {
-		// Check for Start Button A3 Press with debounce
+		
+		// Start Button A3 Press 
 		if (check_button_press(PIND3, btn_reg_start)) {
 			write_btn_reg(btn_reg_active, 1); // Activate counter
 		}
 		
-		// Check for Reset Button A4 Press with debounce
+		// Reset Button A4 Press
 		if (check_button_press(PIND4, btn_reg_reset)) {
 			counter = load_dip(); // Set counter to DIP switch value
 			write_btn_reg(btn_reg_active, 0); // Deactivate counter
@@ -88,18 +90,19 @@ int main(void) {
 
 		// Update counter and display on LEDs every second if active
 		if (read_btn_reg(btn_reg_active)) {
-			if (timer_ms >= 1000) { // 1-second interval
+			if (timer_ms >= 1000) { 
 				timer_ms = 0; // Reset timer
 				if (counter == c_max) {
-					counter = 0; // Reset to max on overflow
+					counter = 0; // Reset to 0 on overflow
 				} else {
-					counter += 1; // Decrement counter
+					counter += 1; // counter incr
 				}
 				PORTB = (PORTB & ~(0b00000111)) | counter; // Output counter to LEDs
 			}
 		}
 		
-		_delay_ms(100); // Delay of 100ms
-		timer_ms += 100; // Increment timer_ms by 100ms
+		_delay_ms(100);
+		timer_ms += 100;
 	}
+	
 }
