@@ -12,7 +12,7 @@ Embedded Systems im Wintersemester 2024/2025
     - [x] Aufgabe 3 ✅
     - [x] Aufgabe 4 ✅
 - [ ] 3 - Timer
-    - [x] Aufgabe 1 
-    - [x] Aufgabe 2a 
+    - [ ] Aufgabe 1 
+    - [ ] Aufgabe 2a 
     - [ ] Aufgabe 2b
     - [ ] Aufgabe 2c
