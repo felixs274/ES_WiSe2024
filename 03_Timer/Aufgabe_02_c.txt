@@ -1,0 +1,11 @@
+Konzept und Umsetzung
+
+- Abstraktion : Timer als hardwareunabhängige Abstraktion im HAL für Initialisierung und Steuerung
+- Koordinator : Zentraler Punkt für Konfiguration und Verwaltung der Timer, mit Möglichkeit Intervalle und Timer-Aktionen zentral zu steuern
+
+
+Vorteile
+
+- Zentrale Verwaltung : Einfache Anpassung von Timer Intervallen ohne Codeänderung in den einzelnen Funktionen
+- Geringere Redundanz : Einmalige Definition im HALGenerator erleichtert anpassungen
+- Portabilität : Leichtere Anpassung auf neue Hardware, da nur der HALGenerator geändert werden muss
