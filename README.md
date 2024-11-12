@@ -35,3 +35,5 @@ Embedded Systems im Wintersemester 2024/2025
     - [ ] Aufgabe 4
 - [ ] 7 - I²C
     - [ ] Aufgabe 1
+- [ ] 8 - Bootloader
+    - [ ] Aufgabe 1
