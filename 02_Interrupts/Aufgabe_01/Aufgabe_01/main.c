@@ -80,8 +80,8 @@ int main(void) {
 	DDRD &= ~((1 << DDD7) | (1 << DDD6) | (1 << DDD5));
 
 	// Set Buttons A4 & A3 to Input = 0
-	DDRD &= ~(1 << DDD2); // A3 (INT0)
-	DDRC &= ~(1 << DDC0); // A4 (PCINT8 on PCINT1)
+	DDRD &= ~(1 << DDD2); // A3 - PD2 (INT0)
+	DDRC &= ~(1 << DDC0); // A4 - PC0 (PCINT8 on PCINT1)
 
 	// Enable Pull-Ups for DIP and Buttons
 	PORTD |= (1 << DDD7) | (1 << DDD6) | (1 << DDD5) | (1 << DDD2);
@@ -101,7 +101,7 @@ int main(void) {
 
 	while (1) {
 
-		// Update counter and display on LEDs every second if active
+		// Update counter and LEDs every second if active
 		if (read_btn_reg(btn_reg_active)) {
 			if (timer_ms >= 1000) {
 				timer_ms = 0; // Reset timer
