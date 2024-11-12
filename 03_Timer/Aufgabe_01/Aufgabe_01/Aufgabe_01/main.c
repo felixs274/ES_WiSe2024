@@ -30,6 +30,7 @@ for 50ms:
 */
 // Timer0 interrupt for 50 ms and 1 second events
 ISR(TIMER0_OVF_vect) {
+	
 	// Increment overflow counter every time the timer overflows
 	timer0_overflows++;
 
