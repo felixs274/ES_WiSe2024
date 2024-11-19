@@ -19,8 +19,7 @@ Embedded Systems im Wintersemester 2024/2025
     - [ ] Aufgabe 2b 🔎
     - [ ] Aufgabe 2c 🔎
 - [ ] 4 - UART
-    - [ ] Aufgabe 1
-    - [ ] Aufgabe 2
+    - [ ] Aufgabe 2 🔎
 - [ ] 5 - Speicher
     - [ ] Aufgabe 1
     - [ ] Aufgabe 2
