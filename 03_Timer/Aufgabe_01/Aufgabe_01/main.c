@@ -1,3 +1,10 @@
+/*
+ * Aufgabe_01.c
+ *
+ * Created: 11.11.2024 14:27:45
+ * Author : Felix
+ */ 
+
 #define F_CPU 16000000UL
 
 #include <avr/io.h>

@@ -1,3 +1,10 @@
+/*
+ * Aufgabe_02.c
+ *
+ * Created: 12.11.2024 23:46:13
+ * Author : Felix
+ */ 
+
 #define F_CPU 16000000UL
 #define TIMER_PRESCALER 1024
 #define C_MAX 7
