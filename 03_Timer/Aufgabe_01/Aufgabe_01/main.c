@@ -59,7 +59,7 @@ int main(void) {
 
     // Set Timer0
     TCCR0A = 0x00;    // Normal mode
-    TCCR0B = 0x05;    // Prescaler of 1204
+    TCCR0B = 0x05;    // Prescaler of 1024
 
     // Enable overflow interrupt for Timer0
     TIMSK0 = (1 << TOIE0);
