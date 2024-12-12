@@ -1,5 +1,8 @@
 # ES_WiSe2024
+
 Embedded Systems im Wintersemester 2024/2025
+
+## Liste der Aufgaben
 
 🔎 = Erledigt, aber noch nicht abgegeben
 
@@ -37,8 +40,9 @@ Embedded Systems im Wintersemester 2024/2025
 - [ ] 8 - Bootloader
     - [ ] Aufgabe 1
 
+## Sonstiges
 
-## Arduino mit avrdude über USB programmieren
+### Arduino mit avrdude über USB programmieren
 
 ```bash
 avrdude -v -patmega328p -carduino -P <COMx> -b115200 -D -Uflash:w:<Datei>.hex:i
