@@ -30,7 +30,6 @@ void USART_Init() {
 	UBRR0H = (BAUD_CONST >> 8);
 	UBRR0L = BAUD_CONST;
 	UCSR0B |= (1 << RXEN0) | (1 << TXEN0) | (1 << RXCIE0); // Enable RX interrupt
-	sei(); // Enable global interrupts
 }
 
 // Function to transmit a single character via UART
@@ -41,8 +40,9 @@ void USART_Transmit(unsigned char data) {
 	UDR0 = data; // Send the data
 }
 
-// UART interrupt service routine for receiving data
+// UART ISR for receiving data
 ISR(USART_RX_vect) {
+	//cli();
 	unsigned char data = UDR0; // Read received data
 
 	if (data == XON) {
@@ -72,13 +72,11 @@ ISR(USART_RX_vect) {
 	}
 
 
-	if (buffer_usage >= (RING_BUFFER_SIZE * 8 / 10) && !xoff_sent) { // 80% full
-		USART_Transmit(XOFF);
-		xoff_sent = 1;
-		} else if (buffer_usage <= (RING_BUFFER_SIZE * 5 / 10) && xoff_sent) { // 50% full
+	if (buffer_usage <= (RING_BUFFER_SIZE * 5 / 10) && xoff_sent) { // 50% full
 		USART_Transmit(XON);
 		xoff_sent = 0;
 	}
+	//sei();
 }
 
 // Function to receive a single character from the ring buffer
@@ -96,6 +94,7 @@ int main(void) {
 	int g = 0;
 	const char message[] = "Hier ATmega. Wer da?";
 	USART_Init();
+	sei(); // Enable global interrupts
 
 	// Send the initial message
 	for (int f = 0; message[f] != '\0'; f++)
@@ -104,7 +103,9 @@ int main(void) {
 	while (1) {
 		// Receive a character from the ring buffer
 		name[g] = USART_Receive();
-
+		USART_Transmit(name[g]);
+		_delay_ms(200);
+		continue;
 		if (name[g] != 0x0d) { // Check for the carriage return (CR) character
 			USART_Transmit(name[g]); // Echo the received character
 			g++;

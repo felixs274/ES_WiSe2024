@@ -6,12 +6,12 @@
 #include <avr/interrupt.h>
 
 volatile uint8_t led_counter = 0;
-volatile uint32_t virtual_timer_ticks = 0;  // Global counter (1 tick = 1 ms)
+volatile uint32_t virtual_timer_ticks = 0;
 
 // Structure to represent each virtual timer
 typedef struct {
-	uint32_t timeout;           // Timer timeout in ticks (ms)
-	uint32_t last_tick;         // Last tick when the timer was last triggered
+	uint32_t timeout;           // Timer timeout in ticks
+	uint32_t last_tick;         // When the timer was last triggered
 	void (*callback)(void);     // Function to call when the timer expires
 	uint8_t active;             // Timer active flag (1 = active, 0 = inactive)
 } VirtualTimer;
@@ -22,16 +22,16 @@ VirtualTimer timers[MAX_TIMERS];
 // Function to declare a timer
 void declareTimer(uint8_t timer_index, uint32_t timeout_us, void (*callback)(void)) {
 	if (timer_index < MAX_TIMERS) {
-		timers[timer_index].timeout = timeout_us/4;       // Set the timeout value 
-		timers[timer_index].callback = callback;         // Set the callback function
-		timers[timer_index].active = 0;                  // Timer is inactive by default
+		timers[timer_index].timeout = timeout_us/4; // Set the timeout value 
+		timers[timer_index].callback = callback; 
+		timers[timer_index].active = 0; // Timer is inactive by default
 	}
 }
 
 // Function to start or restart a timer
 void startTimer(uint8_t timer_index) {
 	timers[timer_index].last_tick = virtual_timer_ticks; // Set last tick to current time
-	timers[timer_index].active = 1;                        // Mark timer as active
+	timers[timer_index].active = 1;  // Set timer as active
 }
 
 // Function to cancel (stop) a timer

@@ -37,3 +37,10 @@ Embedded Systems im Wintersemester 2024/2025
     - [ ] Aufgabe 1
 - [ ] 8 - Bootloader
     - [ ] Aufgabe 1
+
+
+## Arduino mit avrdude über USB programmieren
+
+```bash
+avrdude -v -patmega328p -carduino -P <COMx> -b115200 -D -Uflash:w:<Datei>.hex:i
+```
