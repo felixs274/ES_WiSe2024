@@ -13,13 +13,12 @@ Embedded Systems im Wintersemester 2024/2025
     - [x] Aufgabe 2
     - [x] Aufgabe 3
     - [x] Aufgabe 4
-- [ ] 3 - Timer
+- [x] 3 - Timer
     - [x] Aufgabe 1
-    - [ ] Aufgabe 2a 🔎
-    - [ ] Aufgabe 2b 🔎
-    - [ ] Aufgabe 2c 🔎
+    - [x] Aufgabe 2a
+    - [x] Aufgabe 2b
+    - [x] Aufgabe 2c
 - [ ] 4 - UART
-    - [ ] Aufgabe 1 🔎
     - [ ] Aufgabe 2 🔎
 - [ ] 5 - Speicher
     - [ ] Aufgabe 1
