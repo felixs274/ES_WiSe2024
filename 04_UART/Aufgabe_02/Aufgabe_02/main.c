@@ -1,133 +1,132 @@
-/*
- * Aufgabe_02.c
- *
- * Created: 19.11.2024 13:56:23
- * Author : scf32306
- */ 
-
 #define F_CPU 16000000UL
 
 #define BAUDRATE 9600
-#define BAUD_CONST (((F_CPU / (BAUDRATE * 16UL))) - 1)
+#define BAUD_CONST (((F_CPU/(BAUDRATE*16UL)))-1)
 
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
-#define RING_BUFFER_SIZE 32
-#define XON 0x11
+
+// Ring buffer parameters
+#define RINGBUFFER_SIZE 32
+#define RINGBUFFER_HIGH_LIMIT 20
+#define RINGBUFFER_LOW_LIMIT 4
+
+#define XON  0x11
 #define XOFF 0x13
 
-volatile unsigned char ring_buffer[RING_BUFFER_SIZE];
-volatile uint8_t write_index = 0;
-volatile uint8_t read_index = 0;
+uint8_t flowcontrol = 1; // 0 = XOFF, 1 = XON
 
-volatile uint8_t flow_control = 1; // 1 = XOn (ready to send), 0 = XOff (paused)
-volatile uint8_t xoff_sent = 0; // Tracks whether XOff has already been sent
+typedef struct {
+	uint8_t buffer[RINGBUFFER_SIZE];
+	uint8_t head; // Pointer to the next write position in the buffer
+	uint8_t tail; // Pointer to the next read position in the buffer
+	uint8_t size; // Tracks the number of elements currently in the buffer
+} RingBuffer32;
 
-// Function to initialize UART
-void USART_Init() {
-	UBRR0H = (BAUD_CONST >> 8);
-	UBRR0L = BAUD_CONST;
-	UCSR0B |= (1 << RXEN0) | (1 << TXEN0) | (1 << RXCIE0); // Enable RX interrupt
+volatile RingBuffer32 rb;
+
+// Initialize an empty ring buffer
+void ringBufferInit() {
+	rb.head = rb.tail = 0; 
+	rb.size = 0;    
 }
 
-// Function to transmit a single character via UART
-void USART_Transmit(unsigned char data) {
-	// Wait if flow control is in XOff state
-	while (!flow_control);
-	while (!(UCSR0A & (1 << UDRE0))); // Wait until the data register is empty
-	UDR0 = data; // Send the data
+// Write data to the buffer
+void ringBufferWrite(uint8_t data) {
+	rb.buffer[rb.head] = data; // Write the data to the buffer at the head position
+	rb.head = (rb.head + 1) % RINGBUFFER_SIZE; // Move the head pointer to the next position, wrapping around if needed
+	rb.size++; // Increment the size of the buffer
 }
 
-// UART ISR for receiving data
-ISR(USART_RX_vect) {
-	//cli();
-	unsigned char data = UDR0; // Read received data
-
-	if (data == XON) {
-		flow_control = 1; // Resume transmission
-		xoff_sent = 0;    // Reset XOff tracking
-		return;
+// Read data from the buffer
+uint8_t ringBufferRead() {
+	uint8_t data = 0;
+	if (rb.size > 0) { // Check if the buffer is not empty
+		data = rb.buffer[rb.tail]; // Read the data from the buffer at the tail position
+		rb.tail = (rb.tail + 1) % RINGBUFFER_SIZE; // Move the tail pointer to the next position, wrapping around if needed
+		rb.size--; // Decrement the size of the buffer
 	}
-	if (data == XOFF) {
-		flow_control = 0; // Pause transmission
-		return;
-	}
-
-	uint8_t next_index = (write_index + 1) % RING_BUFFER_SIZE;
-
-	// Store data in the buffer only if it is not full
-	if (next_index != read_index) {
-		ring_buffer[write_index] = data;
-		write_index = next_index;
-	}
-
-	// Check buffer fill level for flow control
-	uint8_t buffer_usage;
-	if (write_index >= read_index) {
-		buffer_usage = write_index - read_index;
-	} else {
-		buffer_usage = RING_BUFFER_SIZE - read_index + write_index;
-	}
-
-
-	if (buffer_usage <= (RING_BUFFER_SIZE * 5 / 10) && xoff_sent) { // 50% full
-		USART_Transmit(XON);
-		xoff_sent = 0;
-	}
-	//sei();
-}
-
-// Function to receive a single character from the ring buffer
-unsigned char USART_Receive() {
-	// Wait until data is available in the buffer
-	while (read_index == write_index);
-
-	unsigned char data = ring_buffer[read_index];
-	read_index = (read_index + 1) % RING_BUFFER_SIZE;
 	return data;
 }
 
-int main(void) {
-	char name[10];
-	int g = 0;
-	const char message[] = "Hier ATmega. Wer da?";
-	USART_Init();
+
+
+
+
+
+
+void USART_Transmit(unsigned char data){
+	while(!(UCSR0A & (1<<UDRE0))) ;
+	UDR0 = data;
+}
+
+
+unsigned char USART_Receive(){
+	while(rb.size == 0);
+	uint8_t data = ringBufferRead();
+	if(rb.size <= RINGBUFFER_LOW_LIMIT && flowcontrol == 0) {
+		USART_Transmit(XON);
+		flowcontrol = 1;
+	}
+	return data;
+}
+
+
+
+
+ISR(USART_RX_vect) {
+	uint8_t data = UDR0; // The received character is ready here.
+	ringBufferWrite(data);
+	
+	if(rb.size >= RINGBUFFER_HIGH_LIMIT && flowcontrol == 1) {
+		USART_Transmit(XOFF);
+		flowcontrol = 0;
+	}
+}
+
+
+
+
+void USART_Init() {
+	UBRR0H = (BAUD_CONST >> 8);
+	UBRR0L = BAUD_CONST;
+	UCSR0B |= (1 << RXEN0) | (1 << TXEN0) | (1 << RXCIE0);
+	UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00); 
 	sei(); // Enable global interrupts
+}
 
-	// Send the initial message
-	for (int f = 0; message[f] != '\0'; f++)
-	USART_Transmit(message[f]);
-
+int main(void){
+	char name[512];
+	int g = 0;
+	const char meldung[]="Hier ATmega. Wer da?";
+	
+	ringBufferInit();
+	USART_Init();
+	USART_Transmit(XON);
+	flowcontrol = 1;
+	
+	for(int f=0;meldung[f]!='\0';f++)
+		USART_Transmit(meldung[f]);
+		
 	while (1) {
-		// Receive a character from the ring buffer
 		name[g] = USART_Receive();
-		USART_Transmit(name[g]);
-		_delay_ms(200);
-		continue;
-		if (name[g] != 0x0d) { // Check for the carriage return (CR) character
-			USART_Transmit(name[g]); // Echo the received character
+		_delay_ms(100);
+	
+		if (name[g]!=0x0d){ // If not carriage return
+			USART_Transmit(name[g]);
 			g++;
 			continue;
 		}
-
-		// Send the response
 		USART_Transmit(0x0d);
 		USART_Transmit('H');
 		USART_Transmit('i');
 		USART_Transmit(' ');
-
-		// Convert the received name to uppercase and send it back
-		for (int f = 0; f < g; f++) {
-			char upper_char = name[f];
-			if (upper_char >= 'a' && upper_char <= 'z') {
-				upper_char -= 32; // Convert to uppercase
-			}
-			USART_Transmit(upper_char);
-		}
-
-		g = 0; // Reset the buffer
+		for(int f=0;f<g;f++)
+			USART_Transmit(name[f]);
+		g = 0;
 		USART_Transmit(0x0d);
-	}
+    }
 }
+
