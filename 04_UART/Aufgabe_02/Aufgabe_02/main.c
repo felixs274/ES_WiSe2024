@@ -112,6 +112,7 @@ int main(void){
 		
 	while (1) {
 		name[g] = USART_Receive();
+		
 		_delay_ms(100);
 	
 		if (name[g]!=0x0d){ // If not carriage return
