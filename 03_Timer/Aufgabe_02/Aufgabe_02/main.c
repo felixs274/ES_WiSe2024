@@ -22,7 +22,7 @@ VirtualTimer timers[MAX_TIMERS];
 // Function to declare a timer
 void declareTimer(uint8_t timer_index, uint32_t timeout_us, void (*callback)(void)) {
 	if (timer_index < MAX_TIMERS) {
-		timers[timer_index].timeout = timeout_us/4; // Set the timeout value 
+		timers[timer_index].timeout = timeout_us/256; // Set the timeout value 
 		timers[timer_index].callback = callback; 
 		timers[timer_index].active = 0; // Timer is inactive by default
 	}
@@ -119,13 +119,13 @@ void timer_interrupt_init() {
 	
 	// Set the compare value
 	// Interrupts triggers every 1 µs!
-	OCR1A = 15;  // For 16 MHz with no prescaler 
+	OCR1A = 63;  // For 16 MHz with no prescaler 
 	
 	// Enable Timer1 Compare Match A interrupt
 	TIMSK1 |= (1 << OCIE1A); // Enable interrupt on compare match
 
 	// Prescaler of 0
-	TCCR1B |= (1 << CS10); 
+	TCCR1B |= (1 << CS10) | (1 << CS11);
 }
 
 int main() {
