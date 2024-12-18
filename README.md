@@ -3,7 +3,7 @@
 Embedded Systems im Wintersemester 2024/2025
 
 > [!IMPORTANT]
-> Letzter Abgabe Termin: 14.01.2025
+> Letzter Abgabe Termin: **14.01.2025**
 
 ## Liste der Aufgaben
 
