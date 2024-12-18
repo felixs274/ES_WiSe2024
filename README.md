@@ -2,6 +2,9 @@
 
 Embedded Systems im Wintersemester 2024/2025
 
+> [!IMPORTANT]
+> Letzter Abgabe Termin: 14.01.2025
+
 ## Liste der Aufgaben
 
 🔎 = Erledigt, aber noch nicht abgegeben
@@ -36,10 +39,7 @@ Embedded Systems im Wintersemester 2024/2025
     - [ ] Aufgabe 1
 - [ ] 8 - Bootloader
     - [ ] Aufgabe 1
-     
-> [!IMPORTANT]
-> Letzter Abgabe Termin: 14.01.2025
-
+    
 
 ## Sonstiges
 
