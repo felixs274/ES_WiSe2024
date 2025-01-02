@@ -31,7 +31,7 @@ Embedded Systems im Wintersemester 2024/2025
     - [ ] Aufgabe 2 🔎
     - [ ] Aufgabe 3 🔎
 - [ ] 6a - Analoge Eingänge
-    - [ ] Aufgabe 2
+    - [ ] Aufgabe 2 🔎
 - [ ] 6b - Analoge Ausgänge
     - [ ] Aufgabe 2
     - [ ] Aufgabe 4
