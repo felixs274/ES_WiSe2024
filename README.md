@@ -33,8 +33,8 @@ Embedded Systems im Wintersemester 2024/2025
 - [ ] 6a - Analoge Eingänge
     - [ ] Aufgabe 2 🔎
 - [ ] 6b - Analoge Ausgänge
-    - [ ] Aufgabe 2
-    - [ ] Aufgabe 4
+    - [ ] Aufgabe 2 🔎
+    - [ ] Aufgabe 4 🔎
 - [ ] 7 - I²C
     - [ ] Aufgabe 1
 - [ ] 8 - Bootloader
