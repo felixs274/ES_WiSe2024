@@ -25,7 +25,7 @@ typedef struct analog {
 // ---------------------------------------------------------------------------
 // UART
 // ---------------------------------------------------------------------------
-void uart_init(unsigned int baud){
+void uart_init(){
 	// set UBRR0H and UBRR0L
 	UBRR0H = (BAUD_CONST >> 8);
 	UBRR0L = BAUD_CONST;
@@ -87,17 +87,17 @@ analog readInternalTemperatureC(){
 	analog t;
 	t.adc = (uint16_t)adc_read(); // Get ADC reading
 
-	// According to the Datasheet, the ADC will measure 314 mV at about +25°C
+	// According to the Datasheet, the ADC will measure 314 mV at about +25Â°C
 	// We will use these values and the given calibration function to determine our constants T_OS and k
 	// 314 mV would be about 292 ADC counts. (0.314*1024)/1.1V = 292.3054
 	
 	// T = { [(ADCH << 8) | ADCL] - T_OS } / k
-	// According to the Datasheet, we have approximately 1 mV/°C, so k = 1
+	// According to the Datasheet, we have approximately 1 mV/Â°C, so k = 1
 	// T = ( 292 ADC counts - T_OS ) / 1
 	// T_OS = 267
 
 	const uint16_t T_OS = 267;
-	const uint16_t k    = 1;  // 1 count/°C * 100 for uint16_t
+	const uint16_t k    = 1;  // 1 count/Â°C * 100 for uint16_t
 
 	t.value = (uint32_t )(t.adc - T_OS) / k; // ????????????
 	t.volts = (uint32_t)t.adc * (uint32_t)1100 / (uint32_t)1023;
@@ -135,7 +135,7 @@ int main(){
 	// Pin PC0 as Input
 	DDRC &= ~(1 << DDC0);
 	
-	uart_init(9600);
+	uart_init();
 	adc_init();
 
 	// Buffer for sprintf
