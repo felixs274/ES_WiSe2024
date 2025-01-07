@@ -98,23 +98,28 @@ analog read_external_poti(){
 // Timer0 PWM
 // ------------------------------------------------------
 void timer0_pwm_init(void) {
-    // Set PD6 (OC0A pin on ATmega328P) as output
-    DDRD |= (1 << PD6);
+	// Set PD5 (OC0B) as output for PWM
+	DDRD |= (1 << PD5);
 
-    // TCCR0A – Timer/Counter Control Register A
-    // WGM02=0, WGM01=1, WGM00=1 -> Fast PWM with TOP = 0xFF
-    // COM0A1=1 -> Clear OC0A on Compare Match, set OC0A at BOTTOM
-	// Datasheet page 106
-    TCCR0A = (1 << WGM01) | (1 << WGM00) | (1 << COM0A1);
+	// Configure Timer0 for Fast PWM Mode 7 (TOP = OCR0A)
+	// WGM02=1, WGM01=1, WGM00=1 -> Mode 7: Fast PWM, TOP = OCR0A
+	// COM0B1=1 -> Set OC0B on Compare Match, clear OC0B at BOTTOM
+	TCCR0A = (1 << WGM01) | (1 << WGM00) // Set WGM01 and WGM00 for Fast PWM
+	| (1 << COM0B1); // Non-inverting PWM on OC0B
 
-    // TCCR0B – Timer/Counter Control Register B
-    // CS01=1, CS00=1 -> Clock prescaler of 64 (16mHz with prescaler of 64 ticks 250 at 1kHz)
-	// Datasheet page 109
-    TCCR0B = (1 << CS01) | (1 << CS00);
+	// Set WGM02=1 in TCCR0B for Mode 7 and select prescaler = 64
+	// CS01=1, CS00=1 -> Prescaler = 64
+	TCCR0B = (1 << WGM02) // Fast PWM Mode 7
+	| (1 << CS01) | (1 << CS00); // Prescaler = 64
 
-    // Init duty cycle in OCR0A to 0
-    OCR0A = 0;
+	// Set TOP value to 249 for exactly 1 kHz PWM
+	// F_CPU / Prescaler * (249+1)
+	OCR0A = 249;
+
+	// Initialize duty cycle to 0% by setting OCR0B = 0
+	OCR0B = 0;
 }
+
 
 
 
@@ -138,10 +143,10 @@ int main(void){
 		duty = (uint32_t)poti.adc * (uint32_t)255 / (uint32_t)1023;
 
 		// Update Duty Cycle
-		OCR0A = duty;
+		OCR0B = duty;
 		
 		// UART Debug 
-		sprintf(buffer, "Poti ADC: %d\nDuty Cycle: %d\nOCR1A: %d\n\r", poti.adc, duty, OCR0A);
+		sprintf(buffer, "Poti ADC: %d\nDuty Cycle: %d\nOCR1A: %d\n\r", poti.adc, duty, OCR0B);
 		uart_print(buffer);
 
 
