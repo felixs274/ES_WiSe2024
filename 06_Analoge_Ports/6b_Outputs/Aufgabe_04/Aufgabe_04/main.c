@@ -199,7 +199,7 @@ int main(void){
 		
 		if (icp_total > 0) {
 			icp_duty = (uint32_t)highTime * (uint32_t)100 / icp_total;
-			icp_duty = 99 - icp_duty; // Inverse Percentage
+			icp_duty = 100 - icp_duty; // Inverse Percentage
 		}
 		
 		// Print out the set duty in raw ADC and raw OCR0A
