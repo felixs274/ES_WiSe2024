@@ -24,9 +24,8 @@
 #define XON  0x11
 #define XOFF 0x13
 
-// EEPROM 
-#define STARTTIME_VALUE 4
-#define STARTTIME_ADDR 0
+// LED Starttime
+#define STARTTIME 6
 
 
 #include <stdint.h>
@@ -40,7 +39,8 @@
 // Global Variables for LEDs and Timer
 volatile uint8_t led_counter = 0; // Current value of LEDs
 volatile uint32_t virtual_timer_ticks = 0; // Counts µs ticks
-volatile uint8_t start_time = 0; // Starttime (0-7)
+uint8_t EEMEM start_time = STARTTIME; // Starttime (0-7) - At Address 0
+
 
 // Global Variables for UART
 volatile uint8_t flowcontrol = 1; // 0 = XOFF, 1 = XON
@@ -128,6 +128,16 @@ uint8_t EEPROM_read(uint16_t address){
 	EECR |= (1 << EERE); // Start the read by setting EERE
 	
 	return EEDR;
+}
+
+void EEPROM_init(){
+	uint8_t val = eeprom_read_byte(&start_time);
+	if(val == (uint8_t)STARTTIME) {
+		uint8_t val_flipped = flip_int_first_3bit(val);
+		eeprom_write_byte(&start_time, val_flipped);
+		led_counter = val_flipped;
+	}
+	PORTB = (PORTB & ~(0b00000111)) | led_counter; // Update LEDs
 }
 
 
@@ -289,7 +299,7 @@ uint8_t USART_readNumber() {
 void processCommand(uint8_t cmd) {
 	switch (cmd) {
 		case 'a': // Start
-			led_counter = start_time; // Reset Stoppwatch to Starttime
+			led_counter = eeprom_read_byte(&start_time); // Reset Stoppwatch to Starttime
 			startTimer(0); // Start LED counter timer
 			stopwatch_active = 1;
 			USART_puts_P(start_msg);
@@ -308,15 +318,15 @@ void processCommand(uint8_t cmd) {
 			break;
 		case 'c': { // Set Starttime
 			USART_puts_P(set_time_msg);
-			led_counter, start_time = (uint8_t)USART_readNumber();
-			EEPROM_write((uint16_t)STARTTIME_ADDR, start_time); // Write new starttime to EEPROM
+			led_counter = (uint8_t)USART_readNumber();
+			eeprom_write_byte(&start_time, led_counter); // Write new starttime to EEPROM
 			PORTB = (PORTB & ~(0b00000111)) | led_counter; // Update LEDs
 			break;
 		}
 		case 'd': // Show current Starttime
 			USART_puts_P(show_time_msg);
 			char d_buffer_1[4];
-			USART_puts(itoa(flip_int_first_3bit(start_time), d_buffer_1, 10));
+			USART_puts(itoa(flip_int_first_3bit(eeprom_read_byte(&start_time)), d_buffer_1, 10));
 			USART_Transmit('\r');
 			USART_Transmit('\n');
 			break;
@@ -432,6 +442,7 @@ int main() {
 	timer_interrupt_init();
 	USART_Init();
 	ringBufferInit();
+	EEPROM_init();
 	
 	sei(); // Enable Interrupts
 
@@ -440,15 +451,11 @@ int main() {
 	// Needed UART settings
 	USART_Transmit(XON);
 	flowcontrol = 1;
-		
-	// Load Values from EEPROM
-	led_counter, start_time = EEPROM_read((uint16_t)STARTTIME_ADDR);
 	
 	// Show start menu and entry String
     showMenu();
     USART_puts_P(prompt_str);
 	
-	//PORTB = (PORTB & ~(0b00000111)) | led_counter; // Update LEDs
 
 	while (1) {
 		
