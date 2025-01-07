@@ -25,6 +25,7 @@
 #define XOFF 0x13
 
 // LED Starttime
+// Number (0-7) at which the LED couter starts
 #define STARTTIME 6
 
 
@@ -38,7 +39,7 @@
 
 // Global Variables for LEDs and Timer
 volatile uint8_t led_counter = 0; // Current value of LEDs
-volatile uint32_t virtual_timer_ticks = 0; // Counts µs ticks
+volatile uint32_t virtual_timer_ticks = 0; // Counts ï¿½s ticks
 uint8_t EEMEM start_time = STARTTIME; // Starttime (0-7) - At Address 0
 
 
@@ -89,7 +90,7 @@ uint8_t flip_int_first_3bit(uint32_t val){
 	// Extract the lowest 3 bits
 	uint8_t lowest3 = val & 0x07;
 	// Flip (invert) them
-	// The remaining 5 bits are discarded by using the mask, so they are zero.
+	// The remaining 5 bits are discarded by using the mask so They are zero
 	uint8_t flipped = (~lowest3) & 0x07;
 	
 	return flipped;
@@ -108,7 +109,7 @@ uint8_t flip_3bit_ascii_for_counter(uint8_t a){
 // Write a single byte to EEPROM
 void EEPROM_write(uint16_t address, uint8_t data){
 	// Wait for completion of any previous write operation
-	// Wait until EEPE is cleared, meaning EEPROM is ready
+	// Wait until EEPE is cleared = EEPROM is ready
 	while (EECR & (1 << EEPE)) ;
 
 	EEAR = address; // Set up address register
@@ -130,12 +131,16 @@ uint8_t EEPROM_read(uint16_t address){
 	return EEDR;
 }
 
+// Flip the STARTIME value in EEPROM to fit the LED Counter
+// EEPROM write only on very first startup of programm!!
 void EEPROM_init(){
+	// Read STARTIME value from EEPROM
 	uint8_t val = eeprom_read_byte(&start_time);
+	// If the value in EEPROM is the same as STARTIME define -> flip it
 	if(val == (uint8_t)STARTTIME) {
-		uint8_t val_flipped = flip_int_first_3bit(val);
-		eeprom_write_byte(&start_time, val_flipped);
-		led_counter = val_flipped;
+		uint8_t val_flipped = flip_int_first_3bit(val); // Flip impoortant first 3 bits
+		eeprom_write_byte(&start_time, val_flipped); // Write flipped value back to EEPROM
+		led_counter = val_flipped; // Set counter variable to flipped value
 	}
 	PORTB = (PORTB & ~(0b00000111)) | led_counter; // Update LEDs
 }
@@ -249,7 +254,7 @@ unsigned char USART_Receive(){
 	return data;
 }
 
-// Function to send String from RAM
+// Function to send String
 void USART_puts(const char *str) {
 	while(*str) {
 		USART_Transmit(*str++);
@@ -384,7 +389,7 @@ ISR(TIMER1_COMPA_vect) {
 
 // UART RX ISR
 ISR(USART_RX_vect) {
-	uint8_t data = UDR0; // The received character is ready here.
+	uint8_t data = UDR0; 
 	ringBufferWrite(data);
 	
 	if(rb.size >= RINGBUFFER_HIGH_LIMIT && flowcontrol == 1) {
@@ -404,7 +409,7 @@ ISR(USART_RX_vect) {
 
 // Configure Inputs and Outputs
 void port_io_init() {
-	// Configure PB0, PB1, and PB2 as output for the LED counter display
+	// Configure PB0, PB1, and PB2 as output for the LED counter
 	DDRB |= (1 << DDB2) | (1 << DDB1) | (1 << DDB0);
 }
 

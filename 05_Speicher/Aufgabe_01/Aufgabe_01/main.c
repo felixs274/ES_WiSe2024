@@ -27,7 +27,7 @@
 
 // Global Variables for LEDs and Timer
 volatile uint8_t led_counter = 0; // Current value of LEDs
-volatile uint32_t virtual_timer_ticks = 0; // Counts µs ticks
+volatile uint32_t virtual_timer_ticks = 0; // Counts ï¿½s ticks
 volatile uint8_t start_time = 5; // Starttime (0-7)
 
 // Global Variables for UART
@@ -175,7 +175,7 @@ unsigned char USART_Receive(){
 	return data;
 }
 
-// Function to send String from RAM
+// Function to send String
 void USART_puts(const char *str) {
 	while(*str) {
 		USART_Transmit(*str++);
