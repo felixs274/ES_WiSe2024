@@ -146,7 +146,7 @@ int main(void){
 		OCR0B = duty;
 		
 		// UART Debug 
-		sprintf(buffer, "Poti ADC: %d\nDuty Cycle: %d\nOCR1A: %d\n\r", poti.adc, duty, OCR0B);
+		sprintf(buffer, "Poti ADC: %d\nDuty Cycle: %d\nOCR0B: %d\n\r", poti.adc, duty, OCR0B);
 		uart_print(buffer);
 
 

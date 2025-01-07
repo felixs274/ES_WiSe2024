@@ -207,7 +207,7 @@ int main(void){
 		}
 		
 		// Print out the set duty in raw ADC and raw OCR0A
-		sprintf(buffer, "Poti ADC: %d\nDuty Cycle: %d\nOCR1A: %d\nICP1: %d%%\n\r", poti.adc, duty, OCR0B, icp_duty);
+		sprintf(buffer, "Poti ADC: %d\nDuty Cycle: %d\nOCR0B: %d\nICP1: %d%%\n\r", poti.adc, duty, OCR0B, icp_duty);
 		uart_print(buffer);
 		
 		_delay_ms(200);
