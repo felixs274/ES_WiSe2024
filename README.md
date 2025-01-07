@@ -26,15 +26,15 @@ Embedded Systems im Wintersemester 2024/2025
     - [x] Aufgabe 2c
 - [x] 4 - UART
     - [x] Aufgabe 2
-- [ ] 5 - Speicher
-    - [ ] Aufgabe 1 🔎
-    - [ ] Aufgabe 2 🔎
-    - [ ] Aufgabe 3 🔎
-- [ ] 6a - Analoge Eingänge
-    - [ ] Aufgabe 2 🔎
-- [ ] 6b - Analoge Ausgänge
-    - [ ] Aufgabe 2 🔎
-    - [ ] Aufgabe 4 🔎
+- [x] 5 - Speicher
+    - [x] Aufgabe 1
+    - [x] Aufgabe 2
+    - [x] Aufgabe 3
+- [x] 6a - Analoge Eingänge
+    - [x] Aufgabe 2
+- [x] 6b - Analoge Ausgänge
+    - [x] Aufgabe 2
+    - [x] Aufgabe 4
 - [ ] 7 - I²C
     - [ ] Aufgabe 1
 - [ ] 8 - Bootloader
